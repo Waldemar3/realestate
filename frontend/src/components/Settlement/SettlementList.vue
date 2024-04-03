@@ -1,31 +1,24 @@
 <template>
-    <div class="settlement" v-for="{ 
-        name, 
-        address, 
-        area, 
-        youtube_video, 
-        photo_path, 
-        presentation_path 
-        } in settlements">
-        <div><strong>Название: </strong>{{ name }}</div>
-        <div><strong>Адрес: </strong>{{ address }}</div>
-        <div><strong>Площадь: </strong>{{ area }}</div>
-        <div><strong>Видео: </strong>{{ youtube_video }}</div>
-        <div><strong>Ссылка на фото: </strong>{{ photo_path }}</div>
-        <div><strong>Ссылка на pdf: </strong>{{ presentation_path }}</div>
-    </div>
+    <settlement-item v-for="settlement in settlements"
+        :settlement="settlement"
+        :key="settlement.id"
+        @remove="$emit('remove', settlement)"
+    />
 </template>
 
 <script>
-export default {
+import SettlementItem from "./SettlementItem";
 
+export default {
+    components: {SettlementItem},
+    props: {
+        settlements: {
+            type: Array,
+            required: true
+        }
+    }
 }
 </script>
 
 <style scoped>
-.settlement{
-    padding: 15px;
-    border: 2px solid teal;
-    margin-top: 10px;
-}
 </style>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
+use App\Models\CurrencyRate;
 use App\Models\House;
 
 class HouseController extends Controller
@@ -19,6 +20,8 @@ class HouseController extends Controller
 
         $sortType = $request->sort_type;
         $sortBy = $request->sort_by;
+
+        $rubRate = CurrencyRate::where('currency', 'RUB')->value('rate');
     
         if ($this->isValidColumnForSorting($sortType) && $sortBy) {
             $sortBy = in_array($sortBy, ['asc', 'desc']) ? $sortBy : 'asc';
@@ -31,7 +34,9 @@ class HouseController extends Controller
 
         $query->paginate($this->getPerPage(), ['*'], 'page', $page);
 
-        $houses = $query->get();
+        $query->selectRaw('*, price_usd * ? as price_rub', [$rubRate]);
+
+        $houses = $query->with('settlement')->get();
 
         return response()->json($houses);
     }
