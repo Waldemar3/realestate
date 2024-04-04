@@ -1,66 +1,54 @@
 <template>
-<div class="login-container">
-    <form class="login-form" @submit.prevent="login">
-    <h2>Авторизация</h2>
-    <div class="form-group">
-        <label for="email">Email:</label>
-        <input type="email" id="email" v-model="email" placeholder="Введите ваш email" required>
+    <div class="login-container">
+        <form class="login-form" @submit.prevent="login">
+            <h2>Авторизация</h2>
+            <ui-input v-model="details.name" placeholder="Введите ваш логин" required />
+            <ui-input type="password" v-model="details.password" placeholder="Введите ваш пароль" required />
+            <ui-button type="submit">Войти</ui-button>
+        </form>
     </div>
-    <div class="form-group">
-        <label for="password">Пароль:</label>
-        <input type="password" id="password" v-model="password" placeholder="Введите ваш пароль" required>
-    </div>
-    <button type="submit">Войти</button>
-    </form>
-</div>
 </template>
 
 <script>
-export default {
+import { mapActions } from "vuex";
 
+export default {
+    data() {
+        return {
+            details: {
+                name: '',
+                password: '',
+            }
+        };
+    },
+    methods: {
+        ...mapActions("auth", ["sendLoginRequest"]),
+
+        login() {
+            this.sendLoginRequest(this.details).then(() => this.$router.push('/'));
+        }
+    }
 };
 </script>
 
-<style>
+<style scoped>
     .login-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
     }
 
     .login-form {
-    width: 300px;
-    padding: 20px;
-    background-color: #ffffff;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 128, 0, 0.2);
-    }
-
-    .form-group {
-    margin-bottom: 20px;
-    }
-
-    label {
-    display: block;
-    margin-bottom: 5px;
-    }
-
-    input {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid teal;
-    border-radius: 5px;
+        width: 300px;
+        padding: 20px;
+        background-color: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 128, 0, 0.2);
     }
 
     button {
-    width: 100%;
-    padding: 10px;
-    background-color: #008000;
-    color: #ffffff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
+        width: 100%;
+        margin-top: 10px;
     }
 </style>

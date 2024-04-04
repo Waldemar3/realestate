@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SettlementController;
 use App\Http\Controllers\HouseController;
+use App\Http\Controllers\AuthController;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,8 +21,15 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::post('/houses', [HouseController::class, 'index']);
-Route::post('/house/create', [HouseController::class, 'create']);
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/houses', [HouseController::class, 'index']);
+    Route::post('/house/create', [HouseController::class, 'create']);
 
-Route::post('/settlements', [SettlementController::class, 'index']);
-Route::post('/settlement/create', [SettlementController::class, 'create']);
+    Route::post('/settlements', [SettlementController::class, 'index']);
+    Route::post('/settlement/create', [SettlementController::class, 'create']);
+
+    Route::post('/user', [AuthController::class, 'user']);
+    Route::post('/logout', [AuthController::class, 'logout']);
+});
+
+Route::post('/login', [AuthController::class, 'login'])->middleware('guest');

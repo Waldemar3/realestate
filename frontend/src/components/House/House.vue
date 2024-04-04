@@ -36,7 +36,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import http from '@/http';
 import HouseList from '@/components/House/HouseList';
 
 export default {
@@ -64,7 +64,7 @@ export default {
     methods:{
         async loadHouses(search = '', filter = ''){
             this.loaded = false;
-            const response = await axios.post('http://localhost/api/houses',{
+            const response = await http.post('/houses',{
                 search,
                 page: this.page,
                 sort_type: filter,

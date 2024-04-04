@@ -29,7 +29,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import http from '@/http';
 import SettlementList from '@/components/Settlement/SettlementList';
 
 export default {
@@ -51,7 +51,7 @@ export default {
     methods:{
         async loadSettlements(search = ''){
             this.loaded = false;
-            const response = await axios.post('http://localhost/api/settlements',{
+            const response = await http.post('/settlements',{
                 search,
                 page: this.page,
             });

@@ -4,14 +4,23 @@
       <router-link to="/houses">Дома</router-link>
       <router-link to="/settlements">Поселки</router-link>
     </nav>
+    <ui-button @click="logout">Logout</ui-button>
 
     <router-view></router-view>
   </div>
 </template>
 
 <script>
+import { mapActions } from "vuex";
+
 export default {
-  
+  methods: {
+    ...mapActions("auth", ["sendLogoutRequest"]),
+
+    logout() {
+      this.sendLogoutRequest().then(()=>this.$router.push({ name: 'Login' }));
+    }
+  }
 }
 </script>
 
