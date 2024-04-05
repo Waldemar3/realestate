@@ -37,4 +37,7 @@ export default {
     justify-content: space-around;
     font-size: 30px;
   }
+  .app{
+    padding: 10px;
+  }
 </style>

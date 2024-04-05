@@ -11,6 +11,9 @@
             <div><strong>Поселок: </strong>{{ house.settlement.name }}</div>
         </div>
         <div class="settlement__btns">
+            <ui-button @click="$emit('edit', house)">
+                Редактировать
+            </ui-button>
             <ui-button @click="$emit('remove', house)">
                 Удалить
             </ui-button>

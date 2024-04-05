@@ -9,6 +9,9 @@
             <div><strong>Ссылка на pdf: </strong>{{ settlement.presentation_path }}</div>
         </div>
         <div class="settlement__btns">
+            <ui-button @click="$emit('edit', settlement)">
+                Редактировать
+            </ui-button>
             <ui-button @click="$emit('remove', settlement)">
                 Удалить
             </ui-button>

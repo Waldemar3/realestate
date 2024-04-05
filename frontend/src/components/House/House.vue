@@ -20,11 +20,13 @@
         </ui-select>
 
         <ui-dialog v-model:show="dialogVisible">
-
+            <house-form :house="house" @load="load"></house-form>
         </ui-dialog>
+
         <house-list 
             :houses="houses" 
             @remove="removeHouse"
+            @edit="editHouse"
         />
 
         <div class="nav_btns">
@@ -38,10 +40,12 @@
 <script>
 import http from '@/http';
 import HouseList from '@/components/House/HouseList';
+import HouseForm from '@/components/House/HouseForm';
 
 export default {
     components: {
-        HouseList
+        HouseList,
+        HouseForm
     },
     data(){
         return {
@@ -50,6 +54,7 @@ export default {
             dialogVisible: false,
             searchQuery: '',
             page: 1,
+            house: null,
             sortOptions: [
                 { value: 'price_usd', name: 'по цене USD' },
                 { value: 'floors', name: 'по этажам' },
@@ -77,11 +82,18 @@ export default {
             this.page = 1;
             this.loadHouses(this.searchQuery);
         },
+        editHouse(house){
+            this.house = house;
+            this.dialogVisible = true;
+        },
         removeHouse(house){
-            console.log(house);
+            http.post('/house/delete', {id: house.id})
+            .then(response=>(this.loadHouses(), alert('Дом успешно удален')))
+            .catch(error=>alert(error));;
         },
         showDialog(){
             this.dialogVisible = true;
+            this.house = null;
         },
         changePage(page){
             if(page <= 0) return;
@@ -90,7 +102,24 @@ export default {
         },
         selectFilter(value){
             this.loadHouses('', value);
-        }
+        },
+        load(data){
+            const formData = new FormData();
+
+            for (let key in data) {
+                formData.append(key, data[key]);
+            }
+
+            if(this.house){
+                return http.post('/house/update', formData)
+                .then(response=>(this.dialogVisible=!this.dialogVisible, this.loadHouses(), alert('Дом успешно сохранен'), this.house=null))
+                .catch(error=>alert(error));
+            }
+
+            http.post('/house/create', formData)
+            .then(response=>(this.dialogVisible=!this.dialogVisible, this.loadHouses(), alert('Дом успешно создан')))
+            .catch(error=>alert(error));
+        },
     },
 };
 </script>

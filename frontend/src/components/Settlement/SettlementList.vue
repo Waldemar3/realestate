@@ -3,6 +3,7 @@
         :settlement="settlement"
         :key="settlement.id"
         @remove="$emit('remove', settlement)"
+        @edit="$emit('edit', settlement)"
     />
 </template>
 

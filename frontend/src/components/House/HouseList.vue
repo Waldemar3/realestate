@@ -2,6 +2,7 @@
     <house-item v-for="house in houses"
         :house="house"
         :key="house.id"
+        @edit="$emit('edit', house)"
         @remove="$emit('remove', house)"
     />
 </template>

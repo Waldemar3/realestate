@@ -24,7 +24,7 @@ class HouseController extends Controller
         $rubRate = CurrencyRate::where('currency', 'RUB')->value('rate');
     
         if ($this->isValidColumnForSorting($sortType) && $sortBy) {
-            $sortBy = in_array($sortBy, ['asc', 'desc']) ? $sortBy : 'asc';
+            $sortBy = in_array($sortBy, ['asc', 'desc']) ? $sortBy : 'desc';
             $query->orderBy($sortType, $sortBy);
         }
 
@@ -36,7 +36,7 @@ class HouseController extends Controller
 
         $query->selectRaw('*, price_usd * ? as price_rub', [$rubRate]);
 
-        $houses = $query->with('settlement')->get();
+        $houses = $query->orderBy('id', 'desc')->with('settlement')->get();
 
         return response()->json($houses);
     }
@@ -44,28 +44,57 @@ class HouseController extends Controller
     public function create(Request $request)
     {
         try {
-            $request->merge([
-                'price_usd' => (float)$request->price_usd,
-                'floors' => (int)$request->floors,
-                'bedrooms' => (int)$request->bedrooms,
-                'area' => (float)$request->area,
-            ]);
-            $request->validate([
-                'name' => 'required|string',
-                'price_usd' => 'required|numeric',
-                'floors' => 'required|integer',
-                'bedrooms' => 'required|integer',
-                'area' => 'required|numeric',
-                'type' => 'required|string',
-                'settlement_id' => 'required|exists:settlements,id', 
-            ]);
+            $validatedData = $this->validateHouse($request);
+
+            $house = House::create($validatedData);
+
+            return response()->json(['message' => 'Дом успешно создан', 'house' => $house], 201);
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json(['errors' => $e->errors()], 422);
         }
+    }
 
-        $house = House::create($request->all());
+    public function update(Request $request)
+    {
+        try {
+            $house = House::findOrFail($request->id);
 
-        return response()->json($house, 201);
+            $validatedData = $this->validateHouse($request);
+
+            $house->update($validatedData);
+
+            return response()->json(['message' => 'Дом успешно обновлен', 'house' => $house]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json(['errors' => $e->errors()], 422);
+        }
+    }
+
+    public function delete(Request $request){
+        $id = $request->input('id');
+        $house = House::findOrFail($id);
+        $house->delete();
+
+        return response()->json(['message' => 'Дом успешно удалено']);
+    }
+
+    public function validateHouse(Request $request)
+    {
+        $request->merge([
+            'price_usd' => (float)$request->price_usd,
+            'floors' => (int)$request->floors,
+            'bedrooms' => (int)$request->bedrooms,
+            'area' => (float)$request->area,
+        ]);
+
+        return $request->validate([
+            'name' => 'required|string',
+            'price_usd' => 'required|numeric',
+            'floors' => 'required|integer',
+            'bedrooms' => 'required|integer',
+            'area' => 'required|numeric',
+            'type' => 'required|string',
+            'settlement_id' => 'required|exists:settlements,id', 
+        ]);
     }
 
     private function isValidColumnForSorting($column)

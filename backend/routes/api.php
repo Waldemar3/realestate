@@ -17,16 +17,20 @@ use App\Http\Controllers\AuthController;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
-
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/houses', [HouseController::class, 'index']);
     Route::post('/house/create', [HouseController::class, 'create']);
 
     Route::post('/settlements', [SettlementController::class, 'index']);
     Route::post('/settlement/create', [SettlementController::class, 'create']);
+
+    Route::middleware('admin')->group(function () {
+        Route::post('/house/update', [HouseController::class, 'update']);
+        Route::post('/settlement/update', [SettlementController::class, 'update']);
+    
+        Route::post('/house/delete', [HouseController::class, 'delete']);
+        Route::post('/settlement/delete', [SettlementController::class, 'delete']);
+    });
 
     Route::post('/user', [AuthController::class, 'user']);
     Route::post('/logout', [AuthController::class, 'logout']);
